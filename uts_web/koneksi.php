@@ -5,10 +5,18 @@ $user = "root";
 $pass = "";
 $db   = "uts_web";
 
-$koneksi = mysqli_connect($host, $user, $pass, $db);
+$koneksi = mysqli_connect(
+    $host,
+    $user,
+    $pass,
+    $db
+);
 
-if (!$koneksi) {
-    die("Koneksi gagal: " . mysqli_connect_error());
+if(!$koneksi){
+    die(
+        "Koneksi Database Gagal : "
+        . mysqli_connect_error()
+    );
 }
 
 ?>

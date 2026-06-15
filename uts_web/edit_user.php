@@ -1,16 +1,14 @@
 <?php
-
 session_start();
-
-include '../koneksi.php';
+include 'koneksi.php';
 
 if(!isset($_SESSION['username'])){
-    header("Location: ../login.php");
+    header("Location: login.php");
     exit();
 }
 
 if($_SESSION['status'] != 'Admin'){
-    header("Location: index.php");
+    header("Location: dashboard.php");
     exit();
 }
 
@@ -18,39 +16,52 @@ $id = $_GET['id'];
 
 $query = mysqli_query(
 $koneksi,
-"SELECT * FROM matakuliah WHERE id='$id'"
+"SELECT * FROM users WHERE id='$id'"
 );
 
 $data = mysqli_fetch_array($query);
 
 if(!$data){
-    header("Location: index.php");
+    header("Location: pengaturan.php");
     exit();
 }
 
 if(isset($_POST['update'])){
 
-    $kode_mk = $_POST['kode_mk'];
-    $nama_mk = $_POST['nama_mk'];
-    $sks     = $_POST['sks'];
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+    $status   = $_POST['status'];
 
-    mysqli_query(
-    $koneksi,
-    "UPDATE matakuliah SET
-    kode_mk='$kode_mk',
-    nama_mk='$nama_mk',
-    sks='$sks'
-    WHERE id='$id'"
-    );
+    if(!empty($password)){
+
+        mysqli_query(
+        $koneksi,
+        "UPDATE users SET
+        username='$username',
+        password='$password',
+        status='$status'
+        WHERE id='$id'"
+        );
+
+    }else{
+
+        mysqli_query(
+        $koneksi,
+        "UPDATE users SET
+        username='$username',
+        status='$status'
+        WHERE id='$id'"
+        );
+
+    }
 
     echo "
     <script>
-    alert('Data mata kuliah berhasil diperbarui');
-    window.location='index.php';
+    alert('User berhasil diperbarui');
+    window.location='pengaturan.php';
     </script>
     ";
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -58,7 +69,7 @@ if(isset($_POST['update'])){
 <html>
 <head>
 
-<title>Edit Mata Kuliah</title>
+<title>Edit User</title>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -75,9 +86,9 @@ body{
 }
 
 .menu{
+    text-decoration:none;
     display:block;
     padding:12px;
-    text-decoration:none;
     color:#333;
     border-radius:8px;
     margin-bottom:5px;
@@ -108,7 +119,7 @@ body{
 
 <div class="text-center mb-4">
 
-<img src="../assets/logo_unsia.png"
+<img src="assets/logo_unsia.png"
 width="90">
 
 <h5 class="mt-2">
@@ -122,37 +133,35 @@ Sistem Akademik
 
 </div>
 
-<a href="../dashboard.php" class="menu">
+<a href="dashboard.php" class="menu">
 🏠 Dashboard
 </a>
 
-<a href="../profil.php" class="menu">
+<a href="profil.php" class="menu">
 👤 Profil Saya
 </a>
 
-<a href="../ubah_password.php" class="menu">
+<a href="ubah_password.php" class="menu">
 🔒 Ubah Password
 </a>
 
-<?php if($_SESSION['status']=="Admin"){ ?>
-
-<a href="../pengaturan.php" class="menu">
+<a href="pengaturan.php" class="menu active-menu">
 👥 Users
 </a>
 
-<?php } ?>
-
-<a href="../mahasiswa/index.php" class="menu">
+<a href="mahasiswa/index.php" class="menu">
 🎓 Mahasiswa
 </a>
 
-<a href="index.php" class="menu active-menu">
+<a href="matakuliah/index.php" class="menu">
 📚 Mata Kuliah
 </a>
-<a href="../tentang.php" class="menu">
+
+<a href="tentang.php" class="menu">
 ℹ Tentang
 </a>
-<a href="../logout.php" class="menu">
+
+<a href="logout.php" class="menu">
 🚪 Logout
 </a>
 
@@ -167,7 +176,7 @@ Sistem Akademik
 <div class="card-header bg-warning">
 
 <h4 class="mb-0">
-✏️ Edit Mata Kuliah
+✏️ Edit User
 </h4>
 
 </div>
@@ -178,12 +187,12 @@ Sistem Akademik
 
 <div class="mb-3">
 
-<label>Kode Mata Kuliah</label>
+<label>Username</label>
 
 <input
 type="text"
-name="kode_mk"
-value="<?= $data['kode_mk']; ?>"
+name="username"
+value="<?= $data['username']; ?>"
 class="form-control"
 required>
 
@@ -191,27 +200,38 @@ required>
 
 <div class="mb-3">
 
-<label>Nama Mata Kuliah</label>
+<label>Password Baru</label>
 
 <input
-type="text"
-name="nama_mk"
-value="<?= $data['nama_mk']; ?>"
-class="form-control"
-required>
+type="password"
+name="password"
+class="form-control">
+
+<small class="text-muted">
+Kosongkan jika tidak ingin mengganti password
+</small>
 
 </div>
 
 <div class="mb-3">
 
-<label>Jumlah SKS</label>
+<label>Status</label>
 
-<input
-type="number"
-name="sks"
-value="<?= $data['sks']; ?>"
-class="form-control"
-required>
+<select
+name="status"
+class="form-select">
+
+<option value="Admin"
+<?= ($data['status']=="Admin") ? "selected" : ""; ?>>
+Admin
+</option>
+
+<option value="User"
+<?= ($data['status']=="User") ? "selected" : ""; ?>>
+User
+</option>
+
+</select>
 
 </div>
 
@@ -224,7 +244,7 @@ class="btn btn-primary">
 
 </button>
 
-<a href="index.php"
+<a href="pengaturan.php"
 class="btn btn-secondary">
 
 ⬅ Kembali
@@ -241,7 +261,7 @@ class="btn btn-secondary">
 
 <div class="card-header bg-info text-white">
 
-Informasi Mata Kuliah
+Informasi User
 
 </div>
 
@@ -253,18 +273,13 @@ Informasi Mata Kuliah
 </p>
 
 <p>
-<b>Kode MK :</b>
-<?= $data['kode_mk']; ?>
+<b>Username :</b>
+<?= $data['username']; ?>
 </p>
 
 <p>
-<b>Nama Mata Kuliah :</b>
-<?= $data['nama_mk']; ?>
-</p>
-
-<p>
-<b>SKS :</b>
-<?= $data['sks']; ?>
+<b>Status :</b>
+<?= $data['status']; ?>
 </p>
 
 </div>
