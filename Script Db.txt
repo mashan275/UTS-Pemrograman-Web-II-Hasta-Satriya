@@ -1,0 +1,161 @@
+-- =====================================================
+-- DATABASE SISTEM AKADEMIK UNIVERSITAS SIBER ASIA
+-- Nama  : Hasta Satriya
+-- NIM   : 240401010207
+-- =====================================================
+
+CREATE DATABASE IF NOT EXISTS uts_web;
+USE uts_web;
+
+-- =====================================================
+-- TABEL USERS
+-- =====================================================
+
+CREATE TABLE users (
+id INT AUTO_INCREMENT PRIMARY KEY,
+username VARCHAR(50) NOT NULL UNIQUE,
+password VARCHAR(255) NOT NULL,
+status ENUM('Admin','User') NOT NULL DEFAULT 'User',
+nama_lengkap VARCHAR(100),
+email VARCHAR(100),
+foto VARCHAR(255),
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO users
+(
+username,
+password,
+status,
+nama_lengkap,
+email
+)
+VALUES
+(
+'admin',
+'admin123',
+'Admin',
+'Hasta Satriya',
+'[hasta@gmail.com](mailto:hasta@gmail.com)'
+);
+
+-- =====================================================
+-- TABEL MAHASISWA
+-- =====================================================
+
+CREATE TABLE mahasiswa (
+id INT AUTO_INCREMENT PRIMARY KEY,
+nim VARCHAR(20) NOT NULL UNIQUE,
+nama VARCHAR(100) NOT NULL,
+jurusan VARCHAR(100) NOT NULL,
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO mahasiswa
+(nim,nama,jurusan)
+VALUES
+('240401010201','Andi Saputra','Informatika'),
+('240401010202','Budi Santoso','Sistem Informasi'),
+('240401010203','Citra Dewi','Informatika'),
+('240401010204','Dedi Pratama','Teknik Komputer'),
+('240401010205','Eka Putri','Sistem Informasi');
+
+-- =====================================================
+-- TABEL MATA KULIAH
+-- =====================================================
+
+CREATE TABLE matakuliah (
+id INT AUTO_INCREMENT PRIMARY KEY,
+kode_mk VARCHAR(20) NOT NULL UNIQUE,
+nama_mk VARCHAR(100) NOT NULL,
+sks INT NOT NULL,
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO matakuliah
+(kode_mk,nama_mk,sks)
+VALUES
+('MK001','Pemrograman Web',3),
+('MK002','Basis Data',3),
+('MK003','Algoritma dan Pemrograman',3),
+('MK004','Jaringan Komputer',3),
+('MK005','Sistem Operasi',3);
+
+-- =====================================================
+-- TABEL DOSEN
+-- =====================================================
+
+CREATE TABLE dosen (
+id INT AUTO_INCREMENT PRIMARY KEY,
+nidn VARCHAR(30) NOT NULL UNIQUE,
+nama_dosen VARCHAR(100) NOT NULL,
+email VARCHAR(100),
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO dosen
+(nidn,nama_dosen,email)
+VALUES
+('D001','Dr. Ahmad Fauzi','[ahmad@unsia.ac.id](mailto:ahmad@unsia.ac.id)'),
+('D002','Dr. Siti Nurhaliza','[siti@unsia.ac.id](mailto:siti@unsia.ac.id)'),
+('D003','Dr. Budi Santoso','[budi@unsia.ac.id](mailto:budi@unsia.ac.id)');
+
+-- =====================================================
+-- TABEL NILAI
+-- =====================================================
+
+CREATE TABLE nilai (
+id INT AUTO_INCREMENT PRIMARY KEY,
+mahasiswa_id INT,
+matakuliah_id INT,
+nilai INT,
+grade VARCHAR(2),
+
+```
+FOREIGN KEY(mahasiswa_id)
+REFERENCES mahasiswa(id)
+ON DELETE CASCADE,
+
+FOREIGN KEY(matakuliah_id)
+REFERENCES matakuliah(id)
+ON DELETE CASCADE
+```
+
+);
+
+-- =====================================================
+-- TABEL JADWAL
+-- =====================================================
+
+CREATE TABLE jadwal (
+id INT AUTO_INCREMENT PRIMARY KEY,
+matakuliah_id INT,
+hari VARCHAR(20),
+jam VARCHAR(20),
+ruangan VARCHAR(20),
+
+```
+FOREIGN KEY(matakuliah_id)
+REFERENCES matakuliah(id)
+ON DELETE CASCADE
+```
+
+);
+
+-- =====================================================
+-- DATA JADWAL CONTOH
+-- =====================================================
+
+INSERT INTO jadwal
+(matakuliah_id,hari,jam,ruangan)
+VALUES
+(1,'Senin','08:00 - 10:00','R101'),
+(2,'Selasa','10:00 - 12:00','R102'),
+(3,'Rabu','08:00 - 10:00','R103'),
+(4,'Kamis','13:00 - 15:00','R104'),
+(5,'Jumat','09:00 - 11:00','R105');
+
+-- =====================================================
+-- SELESAI
+-- DATABASE SISTEM AKADEMIK UNSIA
+-- =====================================================
